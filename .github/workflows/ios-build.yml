@@ -21,16 +21,17 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build IPA (Official Method)
+      - name: Build and Sign IPA
         run: |
           flutter build ios --release --no-codesign
-          # Création propre de l'IPA sans passer par un zip manuel capricieux
+          # On laisse Flutter tenter de gérer la structure
           mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
+          mv build/ios/iphoneos/Runner.app Payload/
+          # On crée le ZIP nous-mêmes proprement
           zip -r iphone-transfer.ipa Payload
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iphone-transfer-app
+          name: iphone-transfer-ipa
           path: iphone-transfer.ipa
