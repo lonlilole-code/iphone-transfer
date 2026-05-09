@@ -14,16 +14,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0' # On fixe une version stable
+
+      # Cette étape répare l'erreur "Application not configured for iOS"
+      - name: Create iOS configuration
+        run: flutter create . --platforms=ios
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build iOS (No Sign)
+      - name: Build iOS (IPA manuel)
         run: |
-          flutter build ios --release --no-codesign --no-verbose
+          flutter build ios --release --no-codesign
           mkdir -p build/ios/iphoneos/Payload
-          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
+          cp -r build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
           cd build/ios/iphoneos
           zip -r iphone-transfer.ipa Payload
 
